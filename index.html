@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Prata&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@500&display=swap" rel="stylesheet">
 
-  <title>Document</title>
+  <title>Clock</title>
   <style>
     body {
       background: url(./charlesdeluvio-pcZvxrAyYoQ-unsplash.jpg) no-repeat fixed center;
@@ -21,7 +21,7 @@
       width: 370px;
       height: 370px;
       position: relative;
-      border: .5px solid rgba(240, 124, 124, 0.507);
+      border: .5px solid rgba(69, 69, 69, 0.507);
       box-shadow: 1px 1px 3px rgba(240, 124, 124, 0.568),
         -1px -1px 3px rgba(240, 124, 124, 0.473),
         inset 1px 1px 3px rgba(240, 124, 124, 0.507),
@@ -35,7 +35,7 @@
       width: 440px;
       height: 440px;
       position: absolute;
-      border: .5px solid rgba(72, 245, 66, 0.459);
+      border: .5px solid rrgba(69, 69, 69, 0.507);
       box-shadow: 1px 1px 3px rgba(72, 245, 66, 0.452),
         -1px -1px 3px rgba(72, 245, 66, 0.37),
         inset 1px 1px 3px rgba(72, 245, 66, 0.397),
@@ -51,7 +51,7 @@
       width: 530px;
       height: 530px;
       position: absolute;
-      border: .5px solid rgb(55, 83, 238);
+      border: .5px solid rgba(69, 69, 69, 0.507);
       box-shadow: .5px .5px 2px rgb(55, 83, 238),
         -.5px -.5px 2px rgb(55, 83, 238),
         inset .5px .5px 1px rgb(55, 83, 238),
@@ -295,21 +295,36 @@
       vertical-align: middle;
       float: left;
     }
-    #lt option{
-      font-size: 5px;
-      background: black;
-      color: aliceblue;
+    #weater p{
+      margin: 0;
     }
+
+    #weater p:nth-child(2){
+      text-align: center;
+      color: #ec68b5;
+    }
+    #weater p:nth-child(3){
+      color: #68ece3;
+    }
+    #weater p:nth-child(4){
+      color: #6c3e34;
+    }
+
+
   </style>
 </head>
 
 <body>
-  <div id='weater'> <select id="lt"></select></div>
-          <div id="today">
-          <span id="year"></span>
-          <span id="mon"></span>
-          <span id="day"></span>
-        </div>
+  <div id="next1" style="display:flex;color: white;">上一頁</div>
+  <div id="next2" style="display:flex;color: white;">下一頁</div>
+  <div id='weater' style="color:wheat ;">
+  </div>
+
+  <div id="today">
+    <span id="year"></span>
+    <span id="mon"></span>
+    <span id="day"></span>
+  </div>
 
 
   <div id="line">
@@ -344,7 +359,9 @@
     </div>
   </div>
 
-
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js'
+    integrity='sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=='
+    crossorigin='anonymous'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
     integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=='
     crossorigin='anonymous'></script>
@@ -378,30 +395,59 @@
     mon.innerText = Today.getMonth() + 1 + '月'
     day.innerText = Today.getDate() + '日'
 
+
+
     //未來三天的資料
     let dataid = "F-C0032-001";
     //氣象局的帳號金鑰
     let Authorization = "CWB-06AC1363-0468-4ED7-91F9-BC84573E2A6E";
     //資料格式
     let format = "json";
+    let weater = document.querySelector("#weater")
+
+
     //api網址，?前面是放參數
-    let url = `https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/${dataid}?Authorization=${Authorization}&format=${format}`;
+    axios.get(`https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/${dataid}?Authorization=${Authorization}&format=${format}`)
+      .then(response => {
 
-    let opt = ""
-    let lt = document.querySelector("#lt") //location
+        const data = response.data.cwbopendata.dataset.location
+        // for (let i = 0; i < data.length; i++) {
+        //   console.log(i)
+        //   console.log('地區:' + data[i].locationName)//地區
+        //   console.log('天氣:' + data[i].weatherElement[0].time[0].parameter.parameterName)//天氣
+        //   console.log('高溫:' + data[i].weatherElement[1].time[0].parameter.parameterName)//高溫
+        //   console.log('低區:' + data[i].weatherElement[2].time[0].parameter.parameterName)//低溫
+        //   console.log('降雨:' + data[i].weatherElement[4].time[0].parameter.parameterName)//降雨機率
+        //   console.log('---------------------------')
+        // }
+        let a = 0
+        function wea(num) {
+          weater.innerHTML =
+            `<p style="font-size:20px;text-align:center;margin:0">${data[a].locationName}</p>
+            <p>${data[a].weatherElement[0].time[0].parameter.parameterName}</p>
+            <p>高溫:${data[a].weatherElement[1].time[0].parameter.parameterName}度</p>
+            <p>低溫:${data[a].weatherElement[2].time[0].parameter.parameterName}度</p>
+            <p>降雨機率:${data[a].weatherElement[4].time[0].parameter.parameterName}%</p>`
 
-    $.get(url, function (response) {
-      console.log(response);
-      let i = 0
-      for (let value of response.cwbopendata.dataset.location) {
-        opt += ("<option value='" + i + "'>" + value.locationName + "</option>")
-        console.log(i)
-        i++;
-      }
-      lt.innerHTML = opt;
-    })
+            a += num
+            
+            a =  (a + num + data.length) % data.length
+            
+            
+          console.log(a, num)
+        }
+        wea(0)
 
-    
+        next2.onclick = () => {
+          wea(1)
+        }
+        next1.onclick = () => {
+          wea(-1)
+        }
+      })
+
+
+
 
 
   </script>
